@@ -10,6 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +28,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
@@ -53,11 +56,15 @@ public class FeedIngestionService {
     private final SourceCatalogService sources;
     private final JdbcClient jdbc;
     private final HttpClient httpClient;
-    private final Set<String> runningSources = ConcurrentHashMap.newKeySet();
+    private final SourceSyncGuard syncGuard;
 
-    public FeedIngestionService(SourceCatalogService sources, JdbcClient jdbc) {
+    public FeedIngestionService(
+            SourceCatalogService sources,
+            JdbcClient jdbc,
+            @Value("${ace.ingestion.source-sync-cooldown:PT120S}") Duration sourceSyncCooldown) {
         this.sources = sources;
         this.jdbc = jdbc;
+        this.syncGuard = new SourceSyncGuard(sourceSyncCooldown, Clock.systemUTC());
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(6))
                 .followRedirects(HttpClient.Redirect.NEVER)
@@ -67,12 +74,52 @@ public class FeedIngestionService {
     public IngestionResult sync(String sourceId) {
         var source = sources.findById(sourceId)
                 .orElseThrow(() -> new IllegalArgumentException("Fonte de ingestão não encontrada."));
-        if (!runningSources.add(sourceId)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Esta fonte já está a ser sincronizada.");
-        }
+        syncGuard.acquire(sourceId);
         try {
             return runSync(source);
         } finally {
+            syncGuard.release(sourceId);
+        }
+    }
+
+    static final class SourceSyncGuard {
+        private final Duration cooldown;
+        private final Clock clock;
+        private final Set<String> runningSources = ConcurrentHashMap.newKeySet();
+        private final Map<String, Instant> lastCompletedAt = new ConcurrentHashMap<>();
+
+        SourceSyncGuard(Duration cooldown, Clock clock) {
+            if (cooldown == null || cooldown.isZero() || cooldown.isNegative()) {
+                throw new IllegalArgumentException("O cooldown de sincronização deve ser positivo.");
+            }
+            this.cooldown = cooldown;
+            this.clock = clock;
+        }
+
+        void acquire(String sourceId) {
+            if (!runningSources.add(sourceId)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Esta fonte já está a ser sincronizada.");
+            }
+
+            var now = clock.instant();
+            var completedAt = lastCompletedAt.get(sourceId);
+            if (completedAt == null) return;
+
+            var availableAt = completedAt.plus(cooldown);
+            if (!now.isBefore(availableAt)) return;
+
+            runningSources.remove(sourceId);
+            var remainingMillis = Math.max(1, Duration.between(now, availableAt).toMillis());
+            var remainingSeconds = Math.max(1, (remainingMillis + 999) / 1000);
+            var unit = remainingSeconds == 1 ? "segundo" : "segundos";
+            throw new ResponseStatusException(
+                    HttpStatus.TOO_MANY_REQUESTS,
+                    "Esta fonte foi sincronizada recentemente. Tenta novamente dentro de "
+                            + remainingSeconds + " " + unit + ".");
+        }
+
+        void release(String sourceId) {
+            lastCompletedAt.put(sourceId, clock.instant());
             runningSources.remove(sourceId);
         }
     }
@@ -104,9 +151,7 @@ public class FeedIngestionService {
 
     private URI validateUri(String value) {
         var uri = URI.create(value);
-        var scheme = uri.getScheme();
-        var host = uri.getHost();
-        if (host == null || scheme == null || !(scheme.equals("https") || scheme.equals("http")) || !ALLOWED_HOSTS.contains(host.toLowerCase(Locale.ROOT))) {
+        if (!isAllowedHttpUri(uri)) {
             throw new IllegalArgumentException("A fonte não pertence à lista de autoridades permitidas.");
         }
         return uri;
@@ -206,14 +251,6 @@ public class FeedIngestionService {
             if (candidates.size() == 12) break;
         }
 
-        if (candidates.isEmpty()) {
-            var title = clean(document.title(), 500);
-            return List.of(new Candidate(
-                    title.isBlank() ? source.name() : title,
-                    "Página oficial verificada; não foram detetadas entradas editoriais estruturadas.",
-                    source.url(),
-                    LocalDate.now().format(DateTimeFormatter.ISO_DATE)));
-        }
         return candidates;
     }
 
@@ -227,14 +264,21 @@ public class FeedIngestionService {
 
     private String normalizeItemUrl(String value, URI sourceUri) {
         try {
+            if (value == null || value.isBlank()) return "";
             var resolved = sourceUri.resolve(value.strip());
-            var scheme = resolved.getScheme();
-            return scheme != null && (scheme.equalsIgnoreCase("https") || scheme.equalsIgnoreCase("http"))
-                    ? resolved.toString()
-                    : "";
+            return isAllowedHttpUri(resolved) ? resolved.toString() : "";
         } catch (IllegalArgumentException exception) {
             return "";
         }
+    }
+
+    private boolean isAllowedHttpUri(URI uri) {
+        var scheme = uri.getScheme();
+        var host = uri.getHost();
+        return host != null
+                && scheme != null
+                && (scheme.equalsIgnoreCase("https") || scheme.equalsIgnoreCase("http"))
+                && ALLOWED_HOSTS.contains(host.toLowerCase(Locale.ROOT));
     }
 
     private int persist(List<Candidate> candidates, SourceFeed source) {

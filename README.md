@@ -23,8 +23,10 @@ Requirements: Java 21+, Maven 3.9+, Node 22+ and npm.
 ./scripts/dev.sh
 ```
 
-Open <http://localhost:3000>. In local development the frontend connects to the Java backend on port `8080`.
+Open <http://localhost:3000>. In local development the frontend proxies API requests to the Java backend on `127.0.0.1:8090`; set `ACE_BACKEND_PORT` to override that port.
 Set `ACE_INGESTION_KEY` to a long random value outside local development. The browser calls a server-side frontend route, so this credential is never included in the React bundle.
+The backend port is bound to the loopback interface by default; expose only the frontend when sharing the app through a tunnel.
+Manual refreshes have a per-source 120-second cooldown; override it with `ACE_INGESTION_SOURCE_SYNC_COOLDOWN` using an ISO-8601 duration such as `PT5M`.
 
 Run verification separately:
 

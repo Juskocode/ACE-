@@ -16,7 +16,7 @@ const localBindingConfig = {
   main: 'vinext/server/fetch-handler',
   compatibility_flags: ['nodejs_compat'],
   vars: {
-    ACE_API_URL: process.env.ACE_API_URL ?? 'http://localhost:8080',
+    ACE_API_URL: process.env.ACE_API_URL ?? 'http://127.0.0.1:8090',
     ACE_INGESTION_KEY: process.env.ACE_INGESTION_KEY ?? '',
   },
   d1_databases: d1
@@ -55,11 +55,11 @@ export default defineConfig(async () => {
       allowedHosts: ['.trycloudflare.com'],
       proxy: {
         '/api/v1': {
-          target: process.env.ACE_API_URL ?? 'http://localhost:8080',
+          target: process.env.ACE_API_URL ?? 'http://127.0.0.1:8090',
           changeOrigin: true,
         },
         '/actuator': {
-          target: process.env.ACE_API_URL ?? 'http://localhost:8080',
+          target: process.env.ACE_API_URL ?? 'http://127.0.0.1:8090',
           changeOrigin: true,
         },
       },

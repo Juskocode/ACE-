@@ -12,7 +12,7 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ message: 'Fonte inválida.' }, { status: 400 });
   }
 
-  const apiOrigin = (process.env.ACE_API_URL ?? 'http://localhost:8080').replace(/\/$/, '');
+  const apiOrigin = (process.env.ACE_API_URL ?? 'http://127.0.0.1:8090').replace(/\/$/, '');
   try {
     const response = await fetch(`${apiOrigin}/api/v1/sources/${encodeURIComponent(sourceId)}/sync`, {
       method: 'POST',

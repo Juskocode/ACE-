@@ -20,16 +20,18 @@ services:
       ACE_DATABASE_URL: jdbc:postgresql://database:5432/ace
       ACE_DATABASE_USER: ace
       ACE_DATABASE_PASSWORD: ace
+      ACE_INGESTION_KEY: ${ACE_INGESTION_KEY:-ace-local-development-key}
     depends_on:
       database:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      - "127.0.0.1:${ACE_BACKEND_PORT:-8090}:8080"
 
   frontend:
     build: ./frontend
     environment:
       ACE_API_URL: http://backend:8080
+      ACE_INGESTION_KEY: ${ACE_INGESTION_KEY:-ace-local-development-key}
     depends_on:
       - backend
     ports:

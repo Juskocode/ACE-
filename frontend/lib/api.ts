@@ -4,9 +4,6 @@ import type { AceData, GeneratedExam, IngestionResult } from '@/lib/types';
 function apiUrl(path: string): string {
   const configuredOrigin = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
   if (configuredOrigin) return `${configuredOrigin}${path}`;
-  if (typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)) {
-    return `http://localhost:8080${path}`;
-  }
   return path;
 }
 
@@ -126,7 +123,26 @@ export async function syncSource(sourceId: string): Promise<IngestionResult> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ sourceId }),
   });
-  const payload = (await response.json().catch(() => null)) as IngestionResult | null;
-  if (payload?.runId) return payload;
-  throw new Error('Source synchronization is unavailable');
+  const payload = (await response.json().catch(() => null)) as
+    | IngestionResult
+    | { message?: unknown }
+    | null;
+
+  if (
+    payload !== null &&
+    typeof payload === 'object' &&
+    'runId' in payload &&
+    typeof (payload as IngestionResult).runId === 'string'
+  ) {
+    return payload as IngestionResult;
+  }
+
+  const message =
+    payload && typeof payload.message === 'string'
+      ? payload.message
+      : response.ok
+        ? 'A resposta da sincronização não é válida.'
+        : `Não foi possível sincronizar a fonte (${response.status}).`;
+
+  throw new Error(message);
 }
