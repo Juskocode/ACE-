@@ -125,6 +125,7 @@ export interface AceData {
 }
 
 export interface GeneratedExam {
+  origin: 'api' | 'demo';
   id: string;
   title: string;
   questionCount: number;

@@ -160,8 +160,8 @@ export function ExamBuilderView({ onNavigate, onExamReady }: ExamBuilderViewProp
                 </div>
               ) : generated ? (
                 <div className="mt-6 rounded-xl bg-teal-300/10 p-4 ring-1 ring-teal-200/20">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-teal-100"><FileCheck2 className="size-4" /> Exame preparado</div>
-                  <p className="mt-2 text-xs leading-5 text-white/55">ID {generated.id} · manifesto de geração guardado</p>
+                  <div className="flex items-center gap-2 text-sm font-semibold text-teal-100"><FileCheck2 className="size-4" /> {generated.origin === 'demo' ? 'Exame demonstrativo local' : 'Exame preparado'}</div>
+                  <p className="mt-2 text-xs leading-5 text-white/55">{generated.origin === 'demo' ? 'A API de geração não respondeu · consulta o manifesto' : `ID ${generated.id} · manifesto de geração guardado`}</p>
                 </div>
               ) : null}
 

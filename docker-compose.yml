@@ -21,6 +21,7 @@ services:
       ACE_DATABASE_USER: ace
       ACE_DATABASE_PASSWORD: ace
       ACE_INGESTION_KEY: ${ACE_INGESTION_KEY:-ace-local-development-key}
+      ACE_INGESTION_SOURCE_SYNC_COOLDOWN: ${ACE_INGESTION_SOURCE_SYNC_COOLDOWN:-PT120S}
     depends_on:
       database:
         condition: service_healthy

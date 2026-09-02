@@ -61,7 +61,7 @@ export const demoData: AceData = {
       explanation: 'O ecocardiograma avalia a estrutura e função cardíacas e é central na confirmação e fenotipagem da insuficiência cardíaca.',
       source: 'ESC Guidelines — Heart Failure',
       sourceUrl: 'https://www.escardio.org/Guidelines',
-      status: 'Revista',
+      status: 'Demonstração',
     },
     {
       id: 'q-002',
@@ -76,7 +76,7 @@ export const demoData: AceData = {
       explanation: 'Na laringite aguda ligeira, uma dose de dexametasona reduz sintomas e necessidade de reavaliação.',
       source: 'DGS — Normas e orientações',
       sourceUrl: 'https://www.dgs.pt/normas-orientacoes-e-informacoes/normas-e-circulares-normativas.aspx',
-      status: 'Revista',
+      status: 'Demonstração',
     },
     {
       id: 'q-003',
@@ -91,7 +91,7 @@ export const demoData: AceData = {
       explanation: 'A dor intensa desproporcionada aos achados, sobretudo com risco embólico, é clássica de isquemia mesentérica aguda.',
       source: 'European Society for Vascular Surgery guideline',
       sourceUrl: 'https://esvs.org/guidelines/',
-      status: 'Revista',
+      status: 'Demonstração',
     },
     {
       id: 'q-004',
@@ -106,7 +106,7 @@ export const demoData: AceData = {
       explanation: 'Hipertensão grave com sintomas neurológicos requer estabilização materna urgente e profilaxia de eclâmpsia.',
       source: 'DGS — Saúde materna',
       sourceUrl: 'https://www.dgs.pt/',
-      status: 'Revista',
+      status: 'Demonstração',
     },
     {
       id: 'q-005',
@@ -121,7 +121,7 @@ export const demoData: AceData = {
       explanation: 'Plano, intenção e acesso ao meio indicam risco elevado, exigindo avaliação urgente e medidas imediatas de segurança.',
       source: 'DGS — Saúde mental',
       sourceUrl: 'https://www.dgs.pt/',
-      status: 'Revista',
+      status: 'Demonstração',
     },
     {
       id: 'q-006',
@@ -136,7 +136,7 @@ export const demoData: AceData = {
       explanation: 'A combinação de hiponatremia hipotónica, euvolemia e urina inapropriadamente concentrada é compatível com SIADH após excluir outras causas.',
       source: 'European hyponatraemia guideline',
       sourceUrl: 'https://www.ese-hormones.org/',
-      status: 'Revista',
+      status: 'Demonstração',
     },
   ],
   materials: [

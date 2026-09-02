@@ -28,7 +28,7 @@ export function QuestionBankView({ questions }: { questions: Question[] }) {
         <div className="flex items-center gap-2"><Filter className="size-4 text-muted-foreground" /><NativeSelect value={area} onChange={(event) => setArea(event.target.value)} className="w-full sm:w-64 [&_[data-slot=native-select]]:h-10 [&_[data-slot=native-select]]:rounded-xl">{areas.map((item) => <NativeSelectOption key={item}>{item}</NativeSelectOption>)}</NativeSelect></div>
       </div>
 
-      <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground"><span>{filtered.length} questões encontradas</span><span className="flex items-center gap-1.5"><ShieldCheck className="size-3.5 text-teal-600" /> Histórico de versões preservado</span></div>
+      <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground"><span>{filtered.length} questões encontradas</span><span className="flex items-center gap-1.5"><ShieldCheck className="size-3.5 text-teal-600" /> Proveniência e revisão identificadas</span></div>
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         {filtered.map((question) => (
           <Card key={question.id} className="border-0 py-0 transition-transform hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgb(31_55_52/8%)] ring-1 ring-border">

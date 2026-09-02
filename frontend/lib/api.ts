@@ -72,10 +72,11 @@ interface GenerateExamInput {
 
 export async function generateExam(input: GenerateExamInput): Promise<GeneratedExam> {
   try {
-    return await request<GeneratedExam>('/api/v1/exams/generate', {
+    const generated = await request<Omit<GeneratedExam, 'origin'>>('/api/v1/exams/generate', {
       method: 'POST',
       body: JSON.stringify(input),
     });
+    return { ...generated, origin: 'api' };
   } catch {
     const selected = demoData.questions.filter(
       (question) => input.areas.length === 0 || input.areas.includes(question.area),
@@ -87,6 +88,7 @@ export async function generateExam(input: GenerateExamInput): Promise<GeneratedE
     await new Promise((resolve) => window.setTimeout(resolve, 900));
 
     return {
+      origin: 'demo',
       id: `demo-${input.seed}`,
       title: input.mode,
       questionCount: items.length,
@@ -94,9 +96,12 @@ export async function generateExam(input: GenerateExamInput): Promise<GeneratedE
       mode: input.mode,
       areas: input.areas.length ? input.areas : ['Todas as áreas'],
       manifestNotes: [
-        'Distribuição equilibrada pela matriz selecionada.',
+        'Modo local: a API de geração não respondeu e foi usado o conjunto demonstrativo disponível.',
+        input.areas.length > 0
+          ? 'O filtro de áreas foi aplicado ao conjunto local de seis perguntas.'
+          : 'A seleção foi feita a partir do conjunto local de seis perguntas.',
         `Ordem aleatória guardada com seed ${input.seed}.`,
-        'Questões repetidas nos últimos 30 dias foram evitadas.',
+        'O total pode ser inferior ao pedido quando o conjunto local não contém itens suficientes.',
         'Conteúdo demonstrativo — validar sempre nas fontes citadas.',
       ],
       items,
