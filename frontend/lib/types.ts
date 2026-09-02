@@ -103,6 +103,17 @@ export interface SourceFeed {
   url: string;
 }
 
+export interface IngestionResult {
+  runId: string;
+  sourceId: string;
+  sourceName: string;
+  status: 'SUCCESS' | 'FAILED';
+  discovered: number;
+  imported: number;
+  completedAt: string;
+  message: string;
+}
+
 export interface AceData {
   dashboard: DashboardData;
   readinessHistory: ReadinessPoint[];

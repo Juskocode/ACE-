@@ -1,5 +1,5 @@
 import { demoData } from '@/lib/demo-data';
-import type { AceData, GeneratedExam } from '@/lib/types';
+import type { AceData, GeneratedExam, IngestionResult } from '@/lib/types';
 
 function apiUrl(path: string): string {
   const configuredOrigin = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
@@ -103,4 +103,15 @@ export async function generateExam(input: GenerateExamInput): Promise<GeneratedE
       items,
     };
   }
+}
+
+export async function syncSource(sourceId: string): Promise<IngestionResult> {
+  const response = await fetch('/api/source-sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sourceId }),
+  });
+  const payload = (await response.json().catch(() => null)) as IngestionResult | null;
+  if (payload?.runId) return payload;
+  throw new Error('Source synchronization is unavailable');
 }

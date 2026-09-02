@@ -29,7 +29,7 @@ Official RSS / APIs / permitted pages
 - `assessment`: deterministic selection, filtering, constraint notes and frozen exam manifests.
 - `materials`: grouped study sources and reading progress.
 - `news`: normalized updates linked to matrix areas.
-- `ingestion`: source catalogue and the boundary for RSS/API/web adapters.
+- `ingestion`: source catalogue plus bounded RSS/Atom and permitted-page adapters. Manual runs require a server-side key, allowlisted authorities, validated redirects, response-size limits and one active run per source.
 - `analytics`: reproducible readiness snapshots.
 - `dashboard`: learner-facing aggregation.
 - `shared`: HTTP configuration and consistent API errors.

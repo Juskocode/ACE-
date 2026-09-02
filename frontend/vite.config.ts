@@ -15,6 +15,10 @@ const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === 'seatbelt';
 const localBindingConfig = {
   main: 'vinext/server/fetch-handler',
   compatibility_flags: ['nodejs_compat'],
+  vars: {
+    ACE_API_URL: process.env.ACE_API_URL ?? 'http://localhost:8080',
+    ACE_INGESTION_KEY: process.env.ACE_INGESTION_KEY ?? '',
+  },
   d1_databases: d1
     ? [
         {
@@ -50,12 +54,12 @@ export default defineConfig(async () => {
       host: '0.0.0.0',
       allowedHosts: ['.trycloudflare.com'],
       proxy: {
-        '/api': {
-          target: process.env.ACE_API_URL ?? 'http://127.0.0.1:8080',
+        '/api/v1': {
+          target: process.env.ACE_API_URL ?? 'http://localhost:8080',
           changeOrigin: true,
         },
         '/actuator': {
-          target: process.env.ACE_API_URL ?? 'http://127.0.0.1:8080',
+          target: process.env.ACE_API_URL ?? 'http://localhost:8080',
           changeOrigin: true,
         },
       },

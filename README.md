@@ -24,6 +24,7 @@ Requirements: Java 21+, Maven 3.9+, Node 22+ and npm.
 ```
 
 Open <http://localhost:3000>. In local development the frontend connects to the Java backend on port `8080`.
+Set `ACE_INGESTION_KEY` to a long random value outside local development. The browser calls a server-side frontend route, so this credential is never included in the React bundle.
 
 Run verification separately:
 
@@ -41,6 +42,7 @@ cd ../frontend && npm run lint && npm run build
 - `GET /api/v1/news`
 - `GET /api/v1/analytics/readiness`
 - `GET /api/v1/sources`
+- `POST /api/v1/sources/{sourceId}/sync` (requires `X-ACE-Ingestion-Key`)
 - `GET /actuator/health`
 
 ## Content safeguards

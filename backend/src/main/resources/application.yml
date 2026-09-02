@@ -26,6 +26,10 @@ management:
       probes:
         enabled: true
 
+ace:
+  ingestion:
+    api-key: ${ACE_INGESTION_KEY:}
+
 logging:
   level:
     root: INFO
