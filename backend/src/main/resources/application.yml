@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: ace-backend
+  datasource:
+    url: ${ACE_DATABASE_URL:jdbc:h2:file:./data/ace;MODE=PostgreSQL;AUTO_SERVER=TRUE}
+    username: ${ACE_DATABASE_USER:sa}
+    password: ${ACE_DATABASE_PASSWORD:}
+    hikari:
+      maximum-pool-size: 8
+      minimum-idle: 1
+  flyway:
+    enabled: true
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+  forward-headers-strategy: framework
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.juskocode.ace: INFO

@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: ${ACE_DATABASE_URL:jdbc:postgresql://localhost:5432/ace}
+    username: ${ACE_DATABASE_USER:ace}
+    password: ${ACE_DATABASE_PASSWORD:ace}
+  flyway:
+    enabled: true
