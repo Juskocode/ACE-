@@ -119,7 +119,7 @@ export ACE_INGESTION_KEY="$(openssl rand -hex 32)"
 ACE_INGESTION_KEY="$(openssl rand -hex 32)" docker compose up --build
 ```
 
-This starts PostgreSQL, the backend and the frontend. The backend remains bound to the host loopback interface.
+This starts PostgreSQL, the backend and the frontend. The backend remains bound to the host loopback interface, and all three containers use `restart: unless-stopped` so Docker can recover them after an unexpected exit.
 
 ### Share a temporary preview
 

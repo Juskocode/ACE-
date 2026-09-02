@@ -1,6 +1,7 @@
 services:
   database:
     image: postgres:17-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ace
       POSTGRES_USER: ace
@@ -15,6 +16,7 @@ services:
 
   backend:
     build: ./backend
+    restart: unless-stopped
     environment:
       SPRING_PROFILES_ACTIVE: postgres
       ACE_DATABASE_URL: jdbc:postgresql://database:5432/ace
@@ -30,6 +32,7 @@ services:
 
   frontend:
     build: ./frontend
+    restart: unless-stopped
     environment:
       ACE_API_URL: http://backend:8080
       ACE_INGESTION_KEY: ${ACE_INGESTION_KEY:-ace-local-development-key}
