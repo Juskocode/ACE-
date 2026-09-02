@@ -16,8 +16,8 @@ interface AnalyticsViewProps {
 }
 
 const chartConfig = {
-  score: { label: 'Índice de preparação', color: '#2c8b7d' },
-  target: { label: 'Trajetória recomendada', color: '#d3a247' },
+  score: { label: 'Índice de preparação', color: 'var(--chart-1)' },
+  target: { label: 'Trajetória recomendada', color: 'var(--chart-3)' },
 };
 
 export function AnalyticsView({ dashboard, history }: AnalyticsViewProps) {
@@ -107,7 +107,7 @@ export function AnalyticsView({ dashboard, history }: AnalyticsViewProps) {
             <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">Ritmo por tema</p>
             <h2 className="mt-1 font-display text-xl font-semibold">Segundos por questão</h2>
             <p className="mt-1 text-xs text-muted-foreground">Objetivo atual: 96 segundos para o formato de 150 questões em 240 minutos.</p>
-            <ChartContainer config={{ seconds: { label: 'Tempo', color: '#4aa99b' } }} className="mt-5 h-[260px] w-full aspect-auto" aria-label="Tempo médio por questão em cinco temas">
+            <ChartContainer config={{ seconds: { label: 'Tempo', color: 'var(--chart-2)' } }} className="mt-5 h-[260px] w-full aspect-auto" aria-label="Tempo médio por questão em cinco temas">
               <BarChart data={topicTimes} layout="vertical" margin={{ left: 18, right: 12 }}>
                 <CartesianGrid horizontal={false} strokeDasharray="4 6" />
                 <XAxis type="number" tickLine={false} axisLine={false} />

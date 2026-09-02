@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 
 import { AppSkeleton } from '@/components/app/app-skeleton';
+import { ThemeToggle } from '@/components/app/theme-toggle';
 import { AnalyticsView } from '@/features/analytics/analytics-view';
 import { DashboardView } from '@/features/dashboard/dashboard-view';
 import { ExamBuilderView } from '@/features/exam-builder/exam-builder-view';
@@ -96,7 +97,7 @@ export function AceApp() {
             ))}
           </nav>
 
-          <div className="mt-auto rounded-2xl border border-sidebar-border bg-white p-4 shadow-[0_8px_30px_rgb(26_63_58/6%)]">
+          <div className="mt-auto rounded-2xl border border-sidebar-border bg-card p-4 shadow-[0_8px_30px_rgb(26_63_58/6%)] dark:shadow-none">
             <div className="flex items-center gap-2 text-xs font-semibold text-primary"><Target className="size-4" /> Meta semanal</div>
             <p className="mt-3 text-2xl font-semibold tracking-tight">3h 42m</p><p className="mt-1 text-xs text-muted-foreground">de 5 horas planeadas</p>
             <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full w-[74%] rounded-full bg-primary" /></div>
@@ -115,6 +116,7 @@ export function AceApp() {
             </div>
             <div className="ml-auto flex items-center gap-2 sm:gap-3">
               <span title={data.origin === 'api' ? 'Dados do backend Java' : 'Dados de demonstração'} className={`hidden rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] xl:inline-flex ${data.origin === 'api' ? 'bg-teal-50 text-teal-700' : 'bg-amber-50 text-amber-700'}`}>{data.origin === 'api' ? 'API ligada' : 'Modo demo'}</span>
+              <ThemeToggle />
               <button aria-label="Ajuda" className="grid size-9 place-items-center rounded-xl text-muted-foreground hover:bg-muted"><CircleHelp className="size-[18px]" /></button>
               <button aria-label="Notificações" className="relative grid size-9 place-items-center rounded-xl text-muted-foreground hover:bg-muted"><Bell className="size-[18px]" /><span className="absolute right-2 top-2 size-1.5 rounded-full bg-coral-500" /></button>
               <div className="hidden items-center gap-2 border-l border-border pl-4 sm:flex"><div className="grid size-9 place-items-center rounded-full bg-teal-100 text-xs font-bold text-teal-800">MA</div><div><p className="text-xs font-semibold">Marta Almeida</p><p className="text-[11px] text-muted-foreground">{data.dashboard.targetLabel}</p></div></div>
