@@ -48,6 +48,7 @@ export default defineConfig(async () => {
     css: { postcss: { plugins: [tailwindcss()] } },
     server: {
       host: '0.0.0.0',
+      allowedHosts: ['.trycloudflare.com'],
       proxy: {
         '/api': {
           target: process.env.ACE_API_URL ?? 'http://127.0.0.1:8080',
