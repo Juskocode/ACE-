@@ -65,7 +65,7 @@ export interface Question {
   explanation: string;
   source: string;
   sourceUrl: string;
-  status: 'Revista' | 'Rascunho';
+  status: 'Revista' | 'Rascunho' | 'Demonstração';
 }
 
 export interface Material {

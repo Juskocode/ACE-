@@ -24,6 +24,14 @@ const templates = [
 const areas = ['Medicina', 'Cirurgia', 'Pediatria', 'Ginecologia/Obstetrícia', 'Psiquiatria'];
 const generationStages = ['A selecionar fontes', 'A equilibrar os temas', 'A validar as questões', 'A preparar o exame'];
 
+function createExamSeed(): number {
+  if (typeof crypto !== 'undefined') {
+    return crypto.getRandomValues(new Uint32Array(1))[0];
+  }
+
+  return Date.now();
+}
+
 export function ExamBuilderView({ onNavigate, onExamReady }: ExamBuilderViewProps) {
   const [template, setTemplate] = useState('weakness');
   const [selectedAreas, setSelectedAreas] = useState<string[]>(['Medicina', 'Ginecologia/Obstetrícia']);
@@ -80,7 +88,7 @@ export function ExamBuilderView({ onNavigate, onExamReady }: ExamBuilderViewProp
       areas: selectedAreas,
       difficulty,
       boostWeakTopics,
-      seed: Date.now() % 100000,
+      seed: createExamSeed(),
     });
     setGenerated(exam);
     setIsGenerating(false);
@@ -89,7 +97,7 @@ export function ExamBuilderView({ onNavigate, onExamReady }: ExamBuilderViewProp
 
   return (
     <div>
-      <PageIntro eyebrow="Gerador de exames" title="Constrói o treino certo para hoje." description="Mistura áreas, equilibra dificuldade e dá prioridade às tuas lacunas. A mesma configuração e seed produzem sempre o mesmo exame." icon={Shuffle} />
+      <PageIntro eyebrow="Gerador de exames" title="Constrói o treino certo para hoje." description="Mistura áreas, equilibra dificuldade e dá prioridade às tuas lacunas. Cada geração recebe uma nova seed e uma ordem aleatória; a seed guardada permite reproduzir o exame." icon={Shuffle} />
 
       <div className="mt-8 grid gap-5 xl:grid-cols-[1.2fr_.72fr]">
         <div className="space-y-5">
@@ -160,7 +168,7 @@ export function ExamBuilderView({ onNavigate, onExamReady }: ExamBuilderViewProp
               <Button disabled={isGenerating} onClick={generated ? () => onNavigate('practice') : handleGenerate} className="mt-6 h-11 w-full rounded-xl bg-mint text-ink hover:bg-mint/90">
                 {isGenerating ? 'A preparar…' : generated ? 'Abrir exame' : 'Gerar exame'} <ChevronRight className="size-4" />
               </Button>
-              <p className="mt-4 text-center text-[10px] leading-4 text-white/40">Questões geradas entram como rascunho e requerem revisão clínica antes de publicação.</p>
+              <p className="mt-4 text-center text-[10px] leading-4 text-white/40">Os itens demonstrativos requerem validação clínica antes de utilização formativa.</p>
             </CardContent>
           </Card>
 

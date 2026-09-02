@@ -33,7 +33,7 @@ export async function loadAceData(): Promise<AceData> {
       await Promise.all([
         request<AceData['dashboard']>('/api/v1/dashboard'),
         request<AceData['readinessHistory']>('/api/v1/analytics/readiness'),
-        request<AceData['questions']>('/api/v1/questions?limit=40'),
+        request<AceData['questions']>('/api/v1/questions?limit=200'),
         request<AceData['materials']>('/api/v1/materials'),
         request<AceData['news']>('/api/v1/news'),
         request<AceData['sources']>('/api/v1/sources'),
@@ -84,25 +84,40 @@ export async function generateExam(input: GenerateExamInput): Promise<GeneratedE
       (question) => input.areas.length === 0 || input.areas.includes(question.area),
     );
     const source = selected.length > 0 ? selected : demoData.questions;
-    const items = Array.from({ length: Math.min(input.questionCount, source.length) }, (_, index) => source[index % source.length]);
+    const shuffled = shuffleWithSeed(source, input.seed);
+    const items = shuffled.slice(0, Math.min(input.questionCount, shuffled.length));
 
     await new Promise((resolve) => window.setTimeout(resolve, 900));
 
     return {
       id: `demo-${input.seed}`,
       title: input.mode,
-      questionCount: input.questionCount,
+      questionCount: items.length,
       durationMinutes: input.durationMinutes,
       mode: input.mode,
       areas: input.areas.length ? input.areas : ['Todas as áreas'],
       manifestNotes: [
         'Distribuição equilibrada pela matriz selecionada.',
+        `Ordem aleatória guardada com seed ${input.seed}.`,
         'Questões repetidas nos últimos 30 dias foram evitadas.',
         'Conteúdo demonstrativo — validar sempre nas fontes citadas.',
       ],
       items,
     };
   }
+}
+
+function shuffleWithSeed<T>(items: T[], seed: number): T[] {
+  const shuffled = [...items];
+  let state = Math.trunc(seed) >>> 0;
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    const target = Math.floor((state / 4294967296) * (index + 1));
+    [shuffled[index], shuffled[target]] = [shuffled[target], shuffled[index]];
+  }
+
+  return shuffled;
 }
 
 export async function syncSource(sourceId: string): Promise<IngestionResult> {

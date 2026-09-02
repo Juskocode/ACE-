@@ -3,10 +3,13 @@ package com.juskocode.ace.questionbank.application;
 import com.juskocode.ace.questionbank.domain.Question;
 import com.juskocode.ace.questionbank.infrastructure.QuestionJdbcRepository;
 import java.util.List;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 
 @Service
 public class QuestionBankService {
+    private static final Set<String> USABLE_STATUSES = Set.of("Revista", "Demonstração");
+
     private final QuestionJdbcRepository repository;
 
     public QuestionBankService(QuestionJdbcRepository repository) {
@@ -19,7 +22,7 @@ public class QuestionBankService {
 
     public List<Question> allPublishedQuestions() {
         return repository.find(null, 200).stream()
-                .filter(question -> "Revista".equals(question.status()))
+                .filter(question -> USABLE_STATUSES.contains(question.status()))
                 .toList();
     }
 }
